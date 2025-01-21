@@ -1,10 +1,20 @@
+[build-system]
+requires = [
+    "setuptools",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+license-files = []
+
 [project]
 name = "odins-spear"
 version = "2.0.0"
 description = "Python package for Odin's API to build and manage Broadworks installations."
 readme = "README.md"
 requires-python = ">=3.12"
-license = { file = "MIT" }
+license = { file = "LICENSE" }
 authors = [
     { name = "Jordan Prescott", email = "jordan@minimalmind.io" }
 ]
@@ -18,8 +28,6 @@ classifiers=[
     # Programming Languages
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     # Operating Systems
     "Operating System :: OS Independent",
