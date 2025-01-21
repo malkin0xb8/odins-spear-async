@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 
 from ..scripter import Scripter
@@ -19,6 +21,10 @@ def export_to_xlsx(data: dict, group_id: str):
                     [user_id, device_name, registration_info.get("registered", False)]
                 )
 
+    output_dir = "./os_reports"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     dataframe = pd.DataFrame(rows, columns=["User ID", "Device Name", "Registered"])
     dataframe.to_excel(
         f"./os_reports/Registration_report_for_{group_id}.xlsx",
@@ -39,7 +45,9 @@ def main(api, service_provider_id: str, group_id: str):
     """
 
     scripter = Scripter.get_instance(api)
-    data = scripter.user_registration(service_provider_id, group_id)
+    data = scripter.user_registration(
+        service_provider_id=service_provider_id, group_id=group_id
+    )
 
     export_to_xlsx(data, group_id)
     return True
