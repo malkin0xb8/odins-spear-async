@@ -8,7 +8,7 @@ def retrieve_extensions(api, service_provider_id: str, group_id: str) -> list:
         api.users.get_users(service_provider_id, group_id)
         + api.hunt_groups.get_group_hunt_groups(service_provider_id, group_id)
         + api.call_centers.get_group_call_centers(service_provider_id, group_id)
-        + api.auto_ettendants.get_auto_attendants(service_provider_id, group_id)
+        + api.auto_attendants.get_auto_attendants(service_provider_id, group_id)
     )
 
     for data in dataset:
