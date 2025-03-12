@@ -1,5 +1,7 @@
+import logging
+from typing import Optional
+
 from .requester import Requester
-from .logger import Logger
 
 from .exceptions import (
     OSApiAuthenticationFail,
@@ -12,7 +14,12 @@ from .endpoints import *  # noqa: F403
 
 class API:
     def __init__(
-        self, base_url: str, username: str, password: str, rate_limit: bool = True
+        self,
+        base_url: str,
+        username: str,
+        password: str,
+        rate_limit: bool = True,
+        logger: Optional[logging.Logger] = None,
     ) -> None:
         """ Connection to Odin API, all interactions with the api are here.
 
@@ -21,6 +28,7 @@ class API:
             username (str): Username used when logging into odin account.
             password (str): Password used when logging into odin account stored as virtual environment.
             rate_limit (bool): Enables (True) or Disables (False) rate limiting to 5 calls per second. Defaults to True.
+            logger (logger, optional): Pass in external logger, if not default logger will be assigned. 
             
         Vars: 
             authorised (bool): Boolean value to indicate if api is authorised.\
@@ -33,9 +41,16 @@ class API:
         self.rate_limit = rate_limit
         self.authorised = False
 
-        self.logger = Logger.get_instance(self.username)
-        self._requester = Requester(self.base_url, self.rate_limit, self.logger)
+        self.logger = logger if logger else self._setup_logger()
+        self.logger.info(
+            f"API initialised, user: {self.username}, base_url: {self.base_url}, rate_limit: {self.rate_limit}"
+        )
 
+        self._requester = Requester.get_instance(
+            self.base_url, self.rate_limit, self.logger
+        )
+
+        # endpoints
         self.administrators = Administrators()
         self.alternate_numbers = AlternateNumbers()
         self.authentication = Authentication()
@@ -108,6 +123,7 @@ class API:
         username: str = None,
         password: str = None,
         rate_limit: bool = None,
+        logger: object = None,
     ):
         """Updates the API with new details.
 
@@ -119,17 +135,29 @@ class API:
         """
 
         if base_url:
+            self.logger.info(
+                f"API base_url updated, old: {self.base_url}, new: {base_url}"
+            )
             self.base_url = base_url
             self._requester.base_url = base_url
         if username:
+            self.logger.info(
+                f"API username updated, old: {self.username}, new: {username}"
+            )
             self.username = username
-            self.logger = Logger.get_instance(self.username)
-            self._requester.logger = self.logger
         if password:
+            self.logger.info("API password updated")
             self._password = password
         if rate_limit:
+            self.logger.info(
+                f"API rate_limit updated, old: {self.rate_limit}, new: {rate_limit}"
+            )
             self.rate_limit = rate_limit
             self._requester.rate_limit = rate_limit
+        if logger:
+            self.logger = logger
+            self._requester.logger = logger
+            self.logger.info("Logger updated")
 
     def _authenticate(self) -> bool:
         """Authenticates session with username and password supplied by user.
@@ -158,6 +186,18 @@ class API:
 
         self._requester.headers["Authorization"] = f"Bearer {session_response['token']}"
         self.authorised = True
+        self.logger.info("API session updated with new token")
+
+    def _setup_logger(self):
+        logger = logging.getLogger("OS")
+        logger.setLevel(logging.ERROR)
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter(
+            "timestamp: %(asctime)s, level: %(levelname)s, module: %(module)s, function: %(funcName)s,  message: %(message)s"
+        )
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        return logger
 
     def __str__(self) -> str:
         return (
