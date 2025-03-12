@@ -166,5 +166,5 @@ os.log
 os_reports/
 call_flow_data-temp/
 
-# temp
-ESLogger.py
+# other
+es_logger.py
