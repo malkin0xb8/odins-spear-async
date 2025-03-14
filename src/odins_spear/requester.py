@@ -1,6 +1,6 @@
 import requests
 import json
-
+import concurrent.futures
 from ratelimit import limits, sleep_and_retry
 
 from .exceptions import OSApiResponseError
@@ -32,6 +32,7 @@ class Requester:
                 "Content-Type": "application/json",
             }
             self.logger = logger
+            self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=20)
 
             self.logger.info(
                 f"Requester initialized with base_url: {self.base_url}, rate_limit: {self.rate_limit}"
@@ -40,7 +41,8 @@ class Requester:
             Requester.__instance = self
 
     def get(self, endpoint, data=None, params=None):
-        return self._request(requests.get, endpoint, data, params)
+        return self.executor.submit(self._request, requests.get, endpoint, data, params)
+        # return self._request(requests.get, endpoint, data, params)
 
     def post(self, endpoint, data=None):
         return self._request(requests.post, endpoint, data)
