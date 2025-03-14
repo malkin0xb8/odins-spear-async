@@ -2,14 +2,13 @@ import logging
 from typing import Optional
 
 from .requester import Requester
+from .endpoints import *  # noqa: F403
 
 from .exceptions import (
     OSApiAuthenticationFail,
     OSSessionRefreshFail,
     OSFailedToLocateSession,
 )
-
-from .endpoints import *  # noqa: F403
 
 
 class API:
@@ -53,6 +52,7 @@ class API:
         # endpoints
         self.administrators = Administrators()  # noqa: F405
         self.alternate_numbers = AlternateNumbers()  # noqa: F405
+        self.announcements = Announcements() #noqa: F405
         self.authentication = Authentication()  # noqa: F405
         self.auto_attendants = AutoAttendants()  # noqa: F405
         self.call_centers = CallCenters()  # noqa: F405

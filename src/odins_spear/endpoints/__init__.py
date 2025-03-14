@@ -1,5 +1,6 @@
 from .administrators import Administrators
 from .alternate_numbers import AlternateNumbers
+from .announcements import Announcements
 from .authentication import Authentication
 from .auto_attendant import AutoAttendants
 from .call_centers import CallCenters
@@ -31,6 +32,7 @@ from .users import Users
 __all__ = [
     "Administrators",
     "AlternateNumbers",
+    "Announcements",
     "Authentication",
     "AutoAttendants",
     "CallCenters",
