@@ -10,10 +10,10 @@ license-files = []
 
 [project]
 name = "odins-spear"
-version = "2.1.1"
+version = "2.2.0"
 description = "Python package for Odin's API to build and manage Broadworks installations."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.9, <3.13"
 license = { file = "LICENSE" }
 authors = [
     { name = "Jordan Prescott", email = "jordan@minimalmind.io" }
@@ -28,6 +28,8 @@ classifiers=[
     # Programming Languages
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.12",
     # Operating Systems
     "Operating System :: OS Independent",
