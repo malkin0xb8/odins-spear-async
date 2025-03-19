@@ -45,7 +45,6 @@ dependencies = [
     "pandas>=2.2.3",
     "ratelimit>=2.2.1",
     "requests>=2.32.3",
-    "tqdm>=4.67.1",
 ]
 
 [dependency-groups]
