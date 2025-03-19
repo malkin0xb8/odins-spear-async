@@ -10,7 +10,7 @@ license-files = []
 
 [project]
 name = "odins-spear"
-version = "2.2.0"
+version = "2.2.1"
 description = "Python package for Odin's API to build and manage Broadworks installations."
 readme = "README.md"
 requires-python = ">=3.9, <3.13"
