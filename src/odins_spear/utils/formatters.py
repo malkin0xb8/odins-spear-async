@@ -52,7 +52,8 @@ def format_service_instance_profile(data: Dict) -> Dict[str, Any]:
     Returns: Empty Dict with serviceInstanceProfile key
     """
 
-    return data.setdefault("serviceInstanceProfile", {})
+    data.setdefault("serviceInstanceProfile", {})
+    return data
 
 
 def sanitise_data(data: Dict):
