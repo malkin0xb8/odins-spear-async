@@ -52,7 +52,7 @@ class API:
         # endpoints
         self.administrators = Administrators()  # noqa: F405
         self.alternate_numbers = AlternateNumbers()  # noqa: F405
-        self.announcements = Announcements() #noqa: F405
+        self.announcements = Announcements()  # noqa: F405
         self.authentication = Authentication()  # noqa: F405
         self.auto_attendants = AutoAttendants()  # noqa: F405
         self.call_centers = CallCenters()  # noqa: F405
@@ -174,7 +174,7 @@ class API:
             self._update_requester(response)
             return True
         except Exception:
-            raise OSApiAuthenticationFail()
+            raise OSApiAuthenticationFail
 
     def _update_requester(self, session_response: dict):
         """When authenticating or re-auth update requester with token so it can make
