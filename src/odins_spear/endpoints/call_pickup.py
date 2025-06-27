@@ -125,7 +125,7 @@ class CallPickup(BaseEndpoint):
         service_provider_id: str,
         group_id: str,
         pickup_group_name: str,
-        new_group_name: str,
+        new_group_name: str = None,
         users: list[str] = [],
     ):
         """Updates the name of a pickup group for the specified group
