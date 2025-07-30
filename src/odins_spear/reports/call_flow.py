@@ -1,5 +1,3 @@
-from tqdm import tqdm
-
 from .report_utils.graphviz_module import GraphvizModule
 from ..utils.helpers import find_entity_with_number_type
 from .report_utils.parsing import call_flow_module
@@ -220,7 +218,7 @@ def main(
 
     logger.info("Fetching hunt groups")
     hunt_groups = api.hunt_groups.get_group_hunt_groups(service_provider_id, group_id)
-    for hg in tqdm(hunt_groups, desc="Fetching all Hunt Groups."):
+    for hg in hunt_groups:
         hunt_group = bre.HuntGroup.from_dict(
             group=group, data=api.hunt_groups.get_group_hunt_group(hg["serviceUserId"])
         )

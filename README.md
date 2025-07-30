@@ -6,6 +6,7 @@ Officially adopted by [Fourteen IP Communications](https://fourteenip.com/) lead
 [![Downloads](https://static.pepy.tech/badge/odins-spear)](https://pepy.tech/project/odins-spear)
 [![Downloads](https://static.pepy.tech/badge/odins-spear/month)](https://pepy.tech/project/odins-spear)
 [![Downloads](https://static.pepy.tech/badge/odins-spear/week)](https://pepy.tech/project/odins-spear)
+[![pypi version](https://img.shields.io/pypi/v/odins-spear.svg)](https://pypi.python.org/pypi/odins-spear)
 ## Overview
 
 Odin's Spear is a Python library designed to streamline and enhance your experience with Odin's API by [Rev.io](https://www.rev.io/blog/solutions/rev-io-odin-api). If you've worked with BroadWorks for years and struggled with its outdated interface and limitations, Odin's API feels like a breath of fresh air—offering a modern user interface, automation, and comprehensive API access.
@@ -91,4 +92,3 @@ If you encounter any issues or have questions, feel free to open an issue on Git
 
 Special thanks to the developers at Rev.io for creating the Odin API and to the engineers who provided invaluable feedback and feature suggestions.
 
-![Odin's Spear Logo](https://github.com/Jordan-Prescott/odins_spear/blob/main/assets/images/slogan.svg)

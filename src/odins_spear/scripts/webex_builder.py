@@ -107,7 +107,7 @@ def main(
         password = api.password_generate.get_password_generate(
             service_provider_id, group_id
         )["password"]
-        api.authentication.put_user_web_authentication_password(user_id, password)
+        api.session.put_user_web_authentication_password(user_id, password)
         logger.info("Set webex password")
     except Exception as e:
         logger.error(f"Failed to set webex password, Detail {e}")

@@ -44,14 +44,18 @@ class Scripter:
             self.api = api
             Scripter.__instance = self
 
-    def _run_script(self, script_name: str, *args, **kwargs) -> Dict[str, Any]:
+    def _run_script(
+        self, script_name: str, time_saved: int, *args, **kwargs
+    ) -> Dict[str, Any]:
         """Dynamically runs the specified script."""
         self.api.logger.debug(
-            f"Script {script_name} executed, args: {[args]}, kwargs: {kwargs}"
+            f"Script executed, executed: {script_name}, args: {[args]}, kwargs: {kwargs}"
         )
         try:
             script_function = getattr(scripts, script_name)
-            self.api.logger.info(f"Script {script_name} executed")
+            self.api.logger.info(
+                f"Script executed, executed: {script_name}, time_saved: {time_saved}"
+            )
         except AttributeError:
             self.api.logger.error(
                 f"Script failed to execute, error: Script '{script_name}' not found."
@@ -86,7 +90,12 @@ class Scripter:
         """
 
         return self._run_script(
-            "bulk_password_reset", service_provider_id, group_id, users, password_type
+            "bulk_password_reset",
+            20,
+            service_provider_id,
+            group_id,
+            users,
+            password_type,
         )
 
     def find_alias(
@@ -106,7 +115,7 @@ class Scripter:
             Dict: Returns type and name/ userId of entity where alias located.
 
         """
-        return self._run_script("find_alias", service_provider_id, group_id, alias)
+        return self._run_script("find_alias", 15, service_provider_id, group_id, alias)
 
     def group_audit(self, *, service_provider_id: str, group_id: str) -> Dict[str, any]:
         """
@@ -120,7 +129,7 @@ class Scripter:
         Returns:
             Dict: Formatted report of the group.
         """
-        return self._run_script("group_audit", service_provider_id, group_id)
+        return self._run_script("group_audit", 20, service_provider_id, group_id)
 
     def locate_free_extension(
         self,
@@ -145,6 +154,7 @@ class Scripter:
         """
         return self._run_script(
             "locate_free_extension",
+            5,
             service_provider_id,
             group_id,
             range_start,
@@ -180,6 +190,7 @@ class Scripter:
         """
         return self._run_script(
             "move_numbers",
+            20,
             current_service_provider_id,
             current_group_id,
             target_service_provider_id,
@@ -212,6 +223,7 @@ class Scripter:
         """
         return self._run_script(
             "remove_numbers",
+            10,
             service_provider_id,
             group_id,
             start_of_range_number,
@@ -237,7 +249,7 @@ class Scripter:
             Dict: Data of Trunking Call Capacity details of SP/ ENT, Groups, and Trunk Groups.
         """
         return self._run_script(
-            "service_provider_trunking_capacity", service_provider_id
+            "service_provider_trunking_capacity", 60, service_provider_id
         )
 
     def user_association(
@@ -255,7 +267,7 @@ class Scripter:
         Returns:
             Dict: Formatted output of the user showing all CC, HG, and Pick Up user is assigned to.
         """
-        self._run_script("user_association", service_provider_id, group_id, user_id)
+        self._run_script("user_association", 30, service_provider_id, group_id, user_id)
 
     def user_registration(
         self, *, service_provider_id: str, group_id: str
@@ -269,7 +281,7 @@ class Scripter:
         Returns:
             Dict: User's ID, Device Name, and Registration status.
         """
-        return self._run_script("user_registration", service_provider_id, group_id)
+        return self._run_script("user_registration", 20, service_provider_id, group_id)
 
     def webex_builder(
         self,
@@ -306,6 +318,7 @@ class Scripter:
 
         return self._run_script(
             "webex_builder",
+            20,
             service_provider_id,
             group_id,
             user_id,

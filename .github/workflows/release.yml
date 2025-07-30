@@ -3,6 +3,7 @@ name: Build and Publish to PyPI
 on:
   release:
     types: [published]  # Triggers when a new release is published
+  workflow_dispatch:
 
 jobs:
   build-and-publish:
