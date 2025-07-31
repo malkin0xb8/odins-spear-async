@@ -1,5 +1,5 @@
 import re
-
+import asyncio
 from ..exceptions import OSAliasNotFound
 
 
@@ -15,71 +15,70 @@ def locate_alias(alias, aliases: list):
     return False
 
 
-def main(api, service_provider_id: str, group_id: str, alias: str):
+async def main(api, service_provider_id: str, group_id: str, alias: str):
     RETRY_QUEUE = []
     MAX_RETRIES = 2
     OBJECT_WITH_ALIAS = []
 
-    auto_attendants = api.auto_attendants.get_auto_attendants(
+    auto_attendants = await api.auto_attendants.get_auto_attendants(
         service_provider_id, group_id
     )
-    hunt_groups = api.hunt_groups.get_group_hunt_groups(service_provider_id, group_id)
-    call_centers = api.call_centers.get_group_call_centers(
+    hunt_groups = await api.hunt_groups.get_group_hunt_groups(
         service_provider_id, group_id
     )
-
-    broadwork_entities_user_ids = []
+    call_centers = await api.call_centers.get_group_call_centers(
+        service_provider_id, group_id
+    )
 
     # save logger from api
     logger = api.logger
 
-    for aa in auto_attendants:
-        broadwork_entities_user_ids.append(["AA", aa["serviceUserId"]])
+    aa_tasks = [
+        (
+            "AA",
+            aa["serviceUserId"],
+            api.auto_attendants.get_auto_attendant(aa["serviceUserId"]),
+        )
+        for aa in auto_attendants
+    ]
+    hg_tasks = [
+        (
+            "HG",
+            hg["serviceUserId"],
+            api.hunt_groups.get_group_hunt_group(hg["serviceUserId"]),
+        )
+        for hg in hunt_groups
+    ]
+    cc_tasks = [
+        (
+            "CC",
+            cc["serviceUserId"],
+            api.call_centers.get_group_call_center(cc["serviceUserId"]),
+        )
+        for cc in call_centers
+    ]
 
-    for hg in hunt_groups:
-        broadwork_entities_user_ids.append(["HG", hg["serviceUserId"]])
+    all_tasks = aa_tasks + hg_tasks + cc_tasks
 
-    for cc in call_centers:
-        broadwork_entities_user_ids.append(["CC", cc["serviceUserId"]])
+    logger.info(f"Running {len(all_tasks)} async entity fetches...")
+    results = await asyncio.gather(
+        *(task[2] for task in all_tasks), return_exceptions=True
+    )
 
-    logger.info("Fetching aa, hg, and cc")
-    for broadwork_entity in broadwork_entities_user_ids:
-        logger.info(f"Fetching '{broadwork_entity[1]}'")
+    # Zip types + results
+    for (entity_type, service_user_id, _), result in zip(all_tasks, results):
+        if isinstance(result, Exception):
+            logger.error(f"Failed to fetch {entity_type} - {service_user_id}: {result}")
+            continue
+
         formatted = {
-            "type": broadwork_entity[0],
-            "service_user_id": broadwork_entity[1],
+            "type": entity_type,
+            "service_user_id": service_user_id,
+            "name": result["serviceInstanceProfile"]["name"],
+            "aliases": result["serviceInstanceProfile"]["aliases"],
         }
+        OBJECT_WITH_ALIAS.append(formatted)
 
-        temp_object = ""
-
-        try:
-            if broadwork_entity[0] == "AA":
-                temp_object = api.auto_attendants.get_auto_attendant(
-                    broadwork_entity[1]
-                )
-            elif broadwork_entity[0] == "HG":
-                temp_object = api.hunt_groups.get_group_hunt_group(broadwork_entity[1])
-            else:
-                temp_object = api.call_centers.get_group_call_center(
-                    broadwork_entity[1]
-                )
-
-            formatted["name"] = temp_object["serviceInstanceProfile"]["name"]
-            formatted["aliases"] = temp_object["serviceInstanceProfile"]["aliases"]
-
-            OBJECT_WITH_ALIAS.append(formatted)
-
-        except Exception:
-            # add a retry count and add this entity to retry queue
-            logger.error(
-                f"Failed to fetch bre '{broadwork_entity[1]}' added to retry queue"
-            )
-            broadwork_entity.append(0)
-            RETRY_QUEUE.append(broadwork_entity)
-
-    # objects failed in first instance
-    if RETRY_QUEUE:
-        logger.info("Going through retry queue")
     while RETRY_QUEUE:
         entity_type, service_user_id, retry_count = RETRY_QUEUE.pop(
             0
@@ -91,11 +90,17 @@ def main(api, service_provider_id: str, group_id: str, alias: str):
 
         try:
             if entity_type == "AA":
-                temp_object = api.auto_attendants.get_auto_attendant(service_user_id)
+                temp_object = await api.auto_attendants.get_auto_attendant(
+                    service_user_id
+                )
             elif entity_type == "HG":
-                temp_object = api.hunt_groups.get_group_hunt_group(service_user_id)
+                temp_object = await api.hunt_groups.get_group_hunt_group(
+                    service_user_id
+                )
             else:
-                temp_object = api.call_centers.get_group_call_center(service_user_id)
+                temp_object = await api.call_centers.get_group_call_center(
+                    service_user_id
+                )
 
             formatted["name"] = temp_object["serviceInstanceProfile"]["name"]
             formatted["aliases"] = temp_object["serviceInstanceProfile"]["aliases"]
@@ -123,7 +128,7 @@ def main(api, service_provider_id: str, group_id: str, alias: str):
     logger.info(f"Alias '{alias}' not found in aa, hg, cc")
 
     logger.info("Fetching users")
-    users = api.users.get_users(service_provider_id, group_id, extended=True)
+    users = await api.users.get_users(service_provider_id, group_id, extended=True)
     logger.info("Users successfully fetched")
 
     logger.info("Searching users")

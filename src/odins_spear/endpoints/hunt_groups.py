@@ -9,7 +9,7 @@ class HuntGroups(BaseEndpoint):
 
     # GET
 
-    def get_group_hunt_groups(self, service_provider_id, group_id):
+    async def get_group_hunt_groups(self, service_provider_id, group_id):
         """Returns a list of all the Hunt Groups within the specified Group.
 
         Args:
@@ -24,9 +24,9 @@ class HuntGroups(BaseEndpoint):
 
         params = {"serviceProviderId": service_provider_id, "groupId": group_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_group_hunt_group(self, service_user_id):
+    async def get_group_hunt_group(self, service_user_id):
         """Returns detailed information about the specified Hunt Group.
         Args:
             service_user_id (str): UserID of the target Hunt Group.
@@ -39,9 +39,9 @@ class HuntGroups(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_group_hunt_group_user(self, service_provider_id, group_id, user_id):
+    async def get_group_hunt_group_user(self, service_provider_id, group_id, user_id):
         """Returns the Hunt Group's the specified User is apart of.
 
         Args:
@@ -61,9 +61,9 @@ class HuntGroups(BaseEndpoint):
             "userId": user_id,
         }
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_group_hunt_groups_available_users(
+    async def get_group_hunt_groups_available_users(
         self, service_provider_id: str, group_id: str
     ):
         """Returns a list of all users within the service provider that are available to be assigned to a hunt group in the specified group.
@@ -80,11 +80,11 @@ class HuntGroups(BaseEndpoint):
 
         params = {"serviceProviderId": service_provider_id, "groupId": group_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
     # POST
 
-    def post_group_hunt_group(
+    async def post_group_hunt_group(
         self,
         service_provider_id: str,
         group_id: str,
@@ -110,9 +110,9 @@ class HuntGroups(BaseEndpoint):
             extension (str): The extension number for the HG. This must be entered as a string.
             payload (dict, optional): HG configuration data.
             agents (list, optional): List of user IDs (str) that should be assigned to the new HG. The user(s) must already exist in the group.
-            policy (str, optional): Regular, Circular, Simultaneous, Uniform, Weighted. Defaults to Regular.
-            no_answer_number_of_rings (int, optional): Defaults to 5.
-            forward_timeout_seconds (int, optional): Defaults to 0.
+            policy (str, optional): Regular, Circular, Simultaneous, Uniform, Weighted. async Defaults to Regular.
+            no_answer_number_of_rings (int, optional): async Defaults to 5.
+            forward_timeout_seconds (int, optional): async Defaults to 0.
 
         Returns:
             None: This method does not return any specific value.
@@ -139,9 +139,9 @@ class HuntGroups(BaseEndpoint):
         )
         payload["serviceInstanceProfile"]["extension"] = extension
 
-        return self._requester.post(endpoint, data=payload)
+        return await self._requester.post(endpoint, data=payload)
 
-    def post_group_hunt_groups_remove_user(
+    async def post_group_hunt_groups_remove_user(
         self, service_provider_id: str, group_id: str, user_id: str
     ):
         """Removes the specified user from all hunt groups in which it currently exists.
@@ -163,16 +163,18 @@ class HuntGroups(BaseEndpoint):
             "userId": user_id,
         }
 
-        return self._requester.post(endpoint, data=data)
+        return await self._requester.post(endpoint, data=data)
 
     # PUT
 
-    def put_group_hunt_groups_status(self, service_user_ids: list, status: bool = True):
+    async def put_group_hunt_groups_status(
+        self, service_user_ids: list, status: bool = True
+    ):
         """Updates a list of Hunt Groups (HG) status to either active or inactive.
 
         Args:
             service_user_ids (list): List of service user IDs of target HGs.
-            status (bool, optional): Status to apply to target HGs. Defaults to True.
+            status (bool, optional): Status to apply to target HGs. async Defaults to True.
 
         Returns:
             None: This method does not return any specific value.
@@ -187,9 +189,9 @@ class HuntGroups(BaseEndpoint):
             ]
         }
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
-    def put_group_hunt_group(
+    async def put_group_hunt_group(
         self,
         service_provider_id: str,
         group_id: str,
@@ -216,9 +218,9 @@ class HuntGroups(BaseEndpoint):
         updates["groupId"] = group_id
         updates["serviceUserId"] = service_user_id
 
-        return self._requester.put(endpoint, data=updates)
+        return await self._requester.put(endpoint, data=updates)
 
-    def put_group_hunt_group_weighted_call_distribution(
+    async def put_group_hunt_group_weighted_call_distribution(
         self, service_provider_id: str, group_id, service_user_id: str, agents: list
     ):
         """Update the Weighted Call Distribution (WCD) between users in a Hunt Group (HG).
@@ -254,11 +256,11 @@ class HuntGroups(BaseEndpoint):
         if not assigned_weight == max_weights:
             raise OSInvalidWeighting
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
     # DELETE
 
-    def delete_group_hunt_group(self, service_user_id: str):
+    async def delete_group_hunt_group(self, service_user_id: str):
         """Deletes the specified hunt group.
 
         Args:
@@ -273,4 +275,4 @@ class HuntGroups(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id}
 
-        return self._requester.delete(endpoint, params=params)
+        return await self._requester.delete(endpoint, params=params)

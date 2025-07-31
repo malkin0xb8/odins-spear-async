@@ -16,7 +16,7 @@ class Session(BaseEndpoint):
 
     # POST
 
-    def post_session(self, username: str, password: str):
+    async def post_session(self, username: str, password: str):
         """Requests access token.
 
         Args:
@@ -28,7 +28,7 @@ class Session(BaseEndpoint):
 
         payload = {"username": username, "password": password}
 
-        return self._requester.post(endpoint, data=payload)
+        return await self._requester.post(endpoint, data=payload)
 
     def post_session_switch(self, username: str):
         """Switch users

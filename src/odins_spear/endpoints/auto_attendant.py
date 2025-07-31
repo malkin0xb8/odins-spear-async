@@ -9,7 +9,7 @@ class AutoAttendants(BaseEndpoint):
 
     # GET
 
-    def get_auto_attendants(self, service_provider_id: str, group_id: str):
+    async def get_auto_attendants(self, service_provider_id: str, group_id: str):
         """Returns a complete list of all Auto Attendants in a single group.
 
         Args:
@@ -24,9 +24,9 @@ class AutoAttendants(BaseEndpoint):
 
         params = {"serviceProviderId": service_provider_id, "groupId": group_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_auto_attendant(self, service_user_id: str):
+    async def get_auto_attendant(self, service_user_id: str):
         """Returns detailed information of a single Auto Attendant.
 
         Args:
@@ -40,9 +40,9 @@ class AutoAttendants(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_auto_attendant_user(
+    async def get_auto_attendant_user(
         self, service_provider_id: str, group_id: str, user_id: str
     ):
         """Returns detailed information about all Auto Attendants (AA) built in the same group as the specified user.
@@ -64,9 +64,9 @@ class AutoAttendants(BaseEndpoint):
             "groupId": group_id,
         }
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_auto_attendant_submenus(self, service_user_id: str):
+    async def get_auto_attendant_submenus(self, service_user_id: str):
         """Returns a list of the submenus of the specified Auto Attendant (AA). Works with Standard AAs only, basic AAs do not have submenus.
 
         Args:
@@ -80,9 +80,11 @@ class AutoAttendants(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_auto_attendant_submenu_usage(self, service_user_id: str, submenu_id: str):
+    async def get_auto_attendant_submenu_usage(
+        self, service_user_id: str, submenu_id: str
+    ):
         """Returns the type of the specified Auto Attendant (AA) submenu. NOTE: This method does not return any usage data.
 
         Args:
@@ -97,11 +99,11 @@ class AutoAttendants(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id, "submenuId": submenu_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
     # POST
 
-    def post_auto_attendant(
+    async def post_auto_attendant(
         self,
         service_provider_id: str,
         group_id: str,
@@ -145,9 +147,9 @@ class AutoAttendants(BaseEndpoint):
         for key, default_value in default_payload_values.items():
             payload.setdefault(key, default_value)
 
-        return self._requester.post(endpoint, data=payload)
+        return await self._requester.post(endpoint, data=payload)
 
-    def post_auto_attendant_remove_user(
+    async def post_auto_attendant_remove_user(
         self, service_provider_id: str, group_id: str, user_id: str
     ):
         """Returns a list of the available Auto Attendants (AAs) built in the same group as the specified user.
@@ -169,13 +171,13 @@ class AutoAttendants(BaseEndpoint):
             "userId": user_id,
         }
 
-        return self._requester.post(endpoint, data=payload)
+        return await self._requester.post(endpoint, data=payload)
 
-    def post_auto_attendant_submenu(
+    async def post_auto_attendant_submenu(
         self,
         service_user_id: str,
         submenu_id: str,
-        announcement_selection: str = "Default",
+        announcement_selection: str = "async Default",
         extension_dialing: bool = True,
     ):
         """Posts a new submenu to the specified Auto Attendant (AA).
@@ -183,8 +185,8 @@ class AutoAttendants(BaseEndpoint):
         Args:
             service_user_id (str): Service User ID of the AA.
             submenu_id (str): ID of the submenu to be created.
-            announcement_selection (str, optional): "Default" or "Personal". Defaults to "Default".
-            extension_dialing (bool, optional): Whether Level Extension Dialing is enabled or not. Defaults to True.
+            announcement_selection (str, optional): "async Default" or "Personal". async Defaults to "async Default".
+            extension_dialing (bool, optional): Whether Level Extension Dialing is enabled or not. async Defaults to True.
 
         Returns:
             None: This method does not return any specific value.
@@ -199,11 +201,11 @@ class AutoAttendants(BaseEndpoint):
             "enableLevelExtensionDialing": extension_dialing,
         }
 
-        return self._requester.post(endpoint, data=payload)
+        return await self._requester.post(endpoint, data=payload)
 
     # PUT
 
-    def put_auto_attendants_status(
+    async def put_auto_attendants_status(
         self, auto_attendant_user_ids: list, status: bool = True
     ):
         """Updates a list of auto attendants (AA) status to either active or inactive.
@@ -212,7 +214,7 @@ class AutoAttendants(BaseEndpoint):
             auto_attendant_user_ids (list): List of service user IDs (AA IDs), the status given
             will be applied to these.
             status (bool, optional): Boolean value of True (Activate) or False (Deactivate)
-            which will be applied to list of AAs. Defaults to True.
+            which will be applied to list of AAs. async Defaults to True.
 
         Returns:
             None: This method does not return any specific value.
@@ -227,9 +229,9 @@ class AutoAttendants(BaseEndpoint):
             ]
         }
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
-    def put_auto_attendant(
+    async def put_auto_attendant(
         self,
         service_provider_id: str,
         group_id,
@@ -258,9 +260,9 @@ class AutoAttendants(BaseEndpoint):
         updates["groupId"] = group_id
         updates["serviceUserId"] = auto_attendant_user_id
 
-        return self._requester.put(endpoint, data=updates)
+        return await self._requester.put(endpoint, data=updates)
 
-    def put_auto_attendant_submenu(
+    async def put_auto_attendant_submenu(
         self, auto_attendant_user_id: str, submenu_id: str, updates: dict
     ):
         """This method allows you to update the configuration of the submenus for your AAs
@@ -283,7 +285,7 @@ class AutoAttendants(BaseEndpoint):
 
     # DELETE
 
-    def delete_auto_attendant(self, service_user_id: str):
+    async def delete_auto_attendant(self, service_user_id: str):
         """Removes an Auto Attendant (AA) from a group.
 
         Args:
@@ -297,9 +299,11 @@ class AutoAttendants(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id}
 
-        return self._requester.delete(endpoint, params=params)
+        return await self._requester.delete(endpoint, params=params)
 
-    def delete_auto_attendant_submenu(self, service_user_id: str, submenu_id: str):
+    async def delete_auto_attendant_submenu(
+        self, service_user_id: str, submenu_id: str
+    ):
         """Removes an Auto Attendant (AA) Submenu from the AA configuration. Submenus are only a feature of the 'Auto Attendant - Standard' service. These are not available on Basic AAs.
 
         Args:
@@ -314,4 +318,4 @@ class AutoAttendants(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id, "submenuId": submenu_id}
 
-        return self._requester.delete(endpoint, params=params)
+        return await self._requester.delete(endpoint, params=params)

@@ -44,7 +44,7 @@ class Scripter:
             self.api = api
             Scripter.__instance = self
 
-    def _run_script(
+    async def _run_script(
         self, script_name: str, time_saved: int, *args, **kwargs
     ) -> Dict[str, Any]:
         """Dynamically runs the specified script."""
@@ -63,9 +63,9 @@ class Scripter:
             raise AttributeError(
                 f"Script '{script_name}' not found in 'scripts' module."
             )
-        return script_function(self.api, *args, **kwargs)
+        return await script_function(self.api, *args, **kwargs)
 
-    def bulk_password_reset(
+    async def bulk_password_reset(
         self,
         *,
         service_provider_id: str,
@@ -89,7 +89,7 @@ class Scripter:
             Dict: Users and their new passwords.
         """
 
-        return self._run_script(
+        return await self._run_script(
             "bulk_password_reset",
             20,
             service_provider_id,
@@ -98,7 +98,7 @@ class Scripter:
             password_type,
         )
 
-    def find_alias(
+    async def find_alias(
         self, *, service_provider_id: str, group_id: str, alias: str
     ) -> Dict[str, any]:
         """Locates alias if assigned to broadworks entity.
@@ -115,9 +115,13 @@ class Scripter:
             Dict: Returns type and name/ userId of entity where alias located.
 
         """
-        return self._run_script("find_alias", 15, service_provider_id, group_id, alias)
+        return await self._run_script(
+            "find_alias", 15, service_provider_id, group_id, alias
+        )
 
-    def group_audit(self, *, service_provider_id: str, group_id: str) -> Dict[str, any]:
+    async def group_audit(
+        self, *, service_provider_id: str, group_id: str
+    ) -> Dict[str, any]:
         """
         Produces a report of key information within the group.
         Reports on DN usage, Service and Service pack usage, Trunking call capacity and group info.
@@ -129,9 +133,9 @@ class Scripter:
         Returns:
             Dict: Formatted report of the group.
         """
-        return self._run_script("group_audit", 20, service_provider_id, group_id)
+        return await self._run_script("group_audit", 20, service_provider_id, group_id)
 
-    def locate_free_extension(
+    async def locate_free_extension(
         self,
         *,
         service_provider_id: str,
@@ -152,7 +156,7 @@ class Scripter:
         Returns:
             Dict: Data of the free extension {extension: "1000"}
         """
-        return self._run_script(
+        return await self._run_script(
             "locate_free_extension",
             5,
             service_provider_id,
@@ -161,7 +165,7 @@ class Scripter:
             range_end,
         )
 
-    def move_numbers(
+    async def move_numbers(
         self,
         *,
         current_service_provider_id: str,
@@ -183,12 +187,12 @@ class Scripter:
             target_group_id (str): Target Group to move numbers to.
             start_of_number_range (str): Starting number in range of numbers you would like to move.
             end_of_number_range (str): Ending nummber in range of numbers you would like to move. If you need to move
-            only one number do not enter a value for this paramter. Defaults to None.
+            only one number do not enter a value for this paramter. async Defaults to None.
 
         Returns:
             Bool: Returns a True once complete.
         """
-        return self._run_script(
+        return await self._run_script(
             "move_numbers",
             20,
             current_service_provider_id,
@@ -199,7 +203,7 @@ class Scripter:
             end_of_range_number,
         )
 
-    def remove_numbers(
+    async def remove_numbers(
         self,
         *,
         service_provider_id: str,
@@ -216,12 +220,12 @@ class Scripter:
             group_id (str): Group ID where target numbers are located.
             start_of_number_range (str): Starting number in range of numbers you would like to remove.
             end_of_number_range (str): Ending nummber in range of numbers you would like to remove. If you need to remove
-            only one number do not enter a value for this paramter. Defaults to None.
+            only one number do not enter a value for this paramter. async Defaults to None.
 
         Returns:
             Bool: Returns a True once complete.
         """
-        return self._run_script(
+        return await self._run_script(
             "remove_numbers",
             10,
             service_provider_id,
@@ -230,7 +234,7 @@ class Scripter:
             end_of_range_number,
         )
 
-    def service_provider_trunking_capacity(
+    async def service_provider_trunking_capacity(
         self, *, service_provider_id: str
     ) -> Dict[str, any]:
         """Returns a JSON breakdown of the Trunking Call Capacity of a Service Provider/ Enterprise (SP/ENT). 
@@ -248,11 +252,11 @@ class Scripter:
         Returns:
             Dict: Data of Trunking Call Capacity details of SP/ ENT, Groups, and Trunk Groups.
         """
-        return self._run_script(
+        return await self._run_script(
             "service_provider_trunking_capacity", 60, service_provider_id
         )
 
-    def user_association(
+    async def user_association(
         self, *, service_provider_id: str, group_id: str, user_id: str
     ) -> Dict[str, any]:
         """
@@ -269,7 +273,7 @@ class Scripter:
         """
         self._run_script("user_association", 30, service_provider_id, group_id, user_id)
 
-    def user_registration(
+    async def user_registration(
         self, *, service_provider_id: str, group_id: str
     ) -> Dict[str, any]:
         """Generates a dictionary detailing each Users ID, device name and registration status within a group.
@@ -281,9 +285,11 @@ class Scripter:
         Returns:
             Dict: User's ID, Device Name, and Registration status.
         """
-        return self._run_script("user_registration", 20, service_provider_id, group_id)
+        return await self._run_script(
+            "user_registration", 20, service_provider_id, group_id
+        )
 
-    def webex_builder(
+    async def webex_builder(
         self,
         *,
         service_provider_id: str,
@@ -304,9 +310,9 @@ class Scripter:
             user_id (str): Target user to build and add webex device.
             device_type (str): Name of the device profile to apply.
             email (str): Email of user. This will be used to sign into the webex client.
-            primary_device (bool, optional): Setting to False will assign as SCA, True is primary. Defaults to True.
-            webex_feature_pack_name (str, optional): Feature pack to assign for Webex services. Defaults to None.
-            enable_integrated_imp (bool, optional): Enables Integrated IMP service for the user if True .Defaults to True.
+            primary_device (bool, optional): Setting to False will assign as SCA, True is primary. async Defaults to True.
+            webex_feature_pack_name (str, optional): Feature pack to assign for Webex services. async Defaults to None.
+            enable_integrated_imp (bool, optional): Enables Integrated IMP service for the user if True .async Defaults to True.
 
         Returns:
             Dict: Webex user/ device details. Includes webex client username and password, and if primary device
@@ -316,7 +322,7 @@ class Scripter:
             OSLicenseNonExistent: Raised if user does not have correct license which allows for SCA devices.
         """
 
-        return self._run_script(
+        return await self._run_script(
             "webex_builder",
             20,
             service_provider_id,

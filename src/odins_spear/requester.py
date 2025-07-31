@@ -1,6 +1,6 @@
 import requests
 import json
-import concurrent.futures
+from httpx import AsyncClient
 from ratelimit import limits, sleep_and_retry
 
 from .exceptions import OSApiResponseError
@@ -25,6 +25,7 @@ class Requester:
         if Requester.__instance is not None:
             raise Exception("Singleton cannot be instantiated more than once!")
         else:
+            self.client = AsyncClient()
             self.base_url = base_url
             self.rate_limit = rate_limit
             self.headers = {
@@ -32,7 +33,6 @@ class Requester:
                 "Content-Type": "application/json",
             }
             self.logger = logger
-            self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=20)
 
             self.logger.info(
                 f"Requester initialized with base_url: {self.base_url}, rate_limit: {self.rate_limit}"
@@ -40,20 +40,19 @@ class Requester:
 
             Requester.__instance = self
 
-    def get(self, endpoint, data=None, params=None):
-        return self.executor.submit(self._request, requests.get, endpoint, data, params)
-        # return self._request(requests.get, endpoint, data, params)
+    async def get(self, endpoint, data=None, params=None):
+        return await self._request(self.client.get, endpoint, data, params)
 
-    def post(self, endpoint, data=None):
-        return self._request(requests.post, endpoint, data)
+    async def post(self, endpoint, data=None):
+        return await self._request(self.client.post, endpoint, data)
 
-    def put(self, endpoint, data=None):
-        return self._request(requests.put, endpoint, data)
+    async def put(self, endpoint, data=None):
+        return await self._request(self.client.put, endpoint, data)
 
-    def delete(self, endpoint, data=None, params=None):
-        return self._request(requests.delete, endpoint, data, params)
+    async def delete(self, endpoint, data=None, params=None):
+        return await self._request(self.client.delete, endpoint, data, params)
 
-    def _request(self, method, endpoint, data=None, params=None):
+    async def _request(self, method, endpoint, data=None, params=None):
         """Handles an API request with or without rate limiting."""
 
         self.logger.info(
@@ -61,7 +60,7 @@ class Requester:
         )
 
         if self.rate_limit:
-            return self._rate_limited_request(method, endpoint, data, params)
+            return await self._rate_limited_request(method, endpoint, data, params)
 
         # Logging request details
         request_payload = json.dumps(data) if data is not None else None
@@ -70,18 +69,20 @@ class Requester:
             f"endpoint: {self.base_url + endpoint}, params: {params}, data: {sanitise_data(data) if data else 'None'}"
         )
 
-        response = method(
-            url=self.base_url + endpoint,
-            headers=self.headers,
-            data=request_payload,
-            params=params or {},
-        )
+        kwargs = {"url": self.base_url + endpoint, "headers": self.headers}
 
-        return self._handle_response(response, method.__name__, endpoint)
+        if data is not None:
+            kwargs["content"] = json.dumps(data)
+        if params:
+            kwargs["params"] = params
+
+        response = await method(**kwargs)
+
+        return await self._handle_response(response, method.__name__, endpoint)
 
     @sleep_and_retry
     @limits(calls=5, period=1)
-    def _rate_limited_request(self, method, endpoint, data=None, params=None):
+    async def _rate_limited_request(self, method, endpoint, data=None, params=None):
         """Handles an API request with rate limiting."""
 
         self.logger.warning(
@@ -94,16 +95,18 @@ class Requester:
             f"endpoint: {self.base_url + endpoint}, params: {params}, data: {sanitise_data(data) if data else 'None'}"
         )
 
-        response = method(
-            url=self.base_url + endpoint,
-            headers=self.headers,
-            data=request_payload,
-            params=params or {},
-        )
+        kwargs = {"url": self.base_url + endpoint, "headers": self.headers}
 
-        return self._handle_response(response, method.__name__, endpoint)
+        if data is not None:
+            kwargs["content"] = json.dumps(data)
+        if params:
+            kwargs["params"] = params
 
-    def _handle_response(self, response, method_name, endpoint):
+        response = await method(**kwargs)
+
+        return await self._handle_response(response, method.__name__, endpoint)
+
+    async def _handle_response(self, response, method_name, endpoint):
         """Handles response logging and error handling."""
 
         # Log response status

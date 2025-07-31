@@ -17,7 +17,7 @@ class API:
         base_url: str,
         username: str,
         password: str,
-        rate_limit: bool = True,
+        rate_limit: bool = False,
         logger: Optional[logging.Logger] = None,
     ) -> None:
         """ Connection to Odin API, all interactions with the api are here.
@@ -83,9 +83,8 @@ class API:
         self.users = Users()  # noqa: F405
 
         # authenticate newly instantiated object
-        self._authenticate()
 
-    def refresh_authorisation(self) -> bool:
+    async def refresh_authorisation(self) -> bool:
         """Re-authenticates the session with the API. Can used if API key is due to expire.
 
         Raises:
@@ -96,7 +95,7 @@ class API:
         """
 
         try:
-            response = self.session.put_session()
+            response = await self.session.put_session()
             self._update_requester(response)
             return True
         except Exception:
@@ -118,7 +117,7 @@ class API:
         except Exception:
             raise OSFailedToLocateSession()
 
-    def update_api(
+    async def update_api(
         self,
         base_url: str = None,
         username: str = None,
@@ -160,7 +159,7 @@ class API:
             self._requester.logger = logger
             self.logger.info("Logger updated")
 
-    def _authenticate(self) -> bool:
+    async def _authenticate(self) -> bool:
         """Authenticates session with username and password supplied by user.
 
         Raises:
@@ -171,7 +170,7 @@ class API:
         """
 
         try:
-            response = self.session.post_session(self.username, self._password)
+            response = await self.session.post_session(self.username, self._password)
             self._update_requester(response)
             return True
         except Exception:

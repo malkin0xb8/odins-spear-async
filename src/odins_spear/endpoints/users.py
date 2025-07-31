@@ -7,7 +7,7 @@ class Users(BaseEndpoint):
         super().__init__(*args, **kwargs)
 
     # GET
-    def get_users(
+    async def get_users(
         self,
         service_provider_id: str = None,
         group_id: str = None,
@@ -22,12 +22,12 @@ class Users(BaseEndpoint):
 
         Args:
             servive_provider_id (str, optional): Service or Enterprise ID,
-            top level object. Defaults to None.
-            group_id (str, optional): Group ID where user is hosted. Defaults to None.
-            filter (str, optional): Filter criteria, supported filters below. Defaults to None.
-            filter_type (str, optional): Options: equals, startsWith, endsWith, contains or endsWith. Defaults to None.
-            filter_value (str, optional): Value filtering on e.g. firstName. Defaults to None.
-            limit (int, optional): Limits the amount of values API returns. Defaults to None.
+            top level object. async Defaults to None.
+            group_id (str, optional): Group ID where user is hosted. async Defaults to None.
+            filter (str, optional): Filter criteria, supported filters below. async Defaults to None.
+            filter_type (str, optional): Options: equals, startsWith, endsWith, contains or endsWith. async Defaults to None.
+            filter_value (str, optional): Value filtering on e.g. firstName. async Defaults to None.
+            limit (int, optional): Limits the amount of values API returns. async Defaults to None.
 
         Returns:
             dict: List of users.
@@ -74,9 +74,9 @@ class Users(BaseEndpoint):
         if extended:
             params["extended"] = True
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_user_password(self, user_id: str):
+    async def get_user_password(self, user_id: str):
         """Returns login and password expiry details of target user.
 
         Args:
@@ -90,9 +90,9 @@ class Users(BaseEndpoint):
 
         params = {"userId": user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_user_by_id(self, user_id: str):
+    async def get_user_by_id(self, user_id: str):
         """Returns extensive details of a single user including alias, enpoint device, and more common
         details like first and last name.
 
@@ -107,9 +107,9 @@ class Users(BaseEndpoint):
 
         params = {"userId": user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_user_audit(self, user_id: str):
+    async def get_user_audit(self, user_id: str):
         """Returns a detailed audit of user spanning from generic details to call policies and features assigned.
 
         Args:
@@ -123,9 +123,9 @@ class Users(BaseEndpoint):
 
         params = {"userId": user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_user_login_info(self, user_id: str):
+    async def get_user_login_info(self, user_id: str):
         """Returns detailed log in information such as password expirery
 
         Args:
@@ -139,9 +139,9 @@ class Users(BaseEndpoint):
 
         params = {"userId": user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_user_portal_passcode(self, user_id: str):
+    async def get_user_portal_passcode(self, user_id: str):
         """Returns portal passcode details such as expirery
 
         Args:
@@ -155,9 +155,9 @@ class Users(BaseEndpoint):
 
         params = {"userId": user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_group_user_audit(self, service_provider_id: str, group_id: str):
+    async def get_group_user_audit(self, service_provider_id: str, group_id: str):
         """AI is creating summary for get_group_user_audit
 
         Args:
@@ -172,10 +172,10 @@ class Users(BaseEndpoint):
 
         params = {"serviceProviderId": service_provider_id, "groupId": group_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
     # POST
-    def post_user(
+    async def post_user(
         self,
         service_provider_id: str,
         group_id: str,
@@ -187,7 +187,7 @@ class Users(BaseEndpoint):
         payload: dict = {},
     ):
         """
-            Creates a new user in the specified group with the configuration defined in the payload.
+            Creates a new user in the specified group with the configuration async defined in the payload.
 
         Args:
             service_provider_id (str): Service provider ID where Group is loctaed.
@@ -224,9 +224,9 @@ class Users(BaseEndpoint):
         payload["extension"] = extension
         payload["password"] = web_auth_password
 
-        return self._requester.post(endpoint, data=payload)
+        return await self._requester.post(endpoint, data=payload)
 
-    def post_user_reset(
+    async def post_user_reset(
         self,
         user_id: str,
         remove_from_group_services: bool,
@@ -264,10 +264,10 @@ class Users(BaseEndpoint):
             "resetPasswordPasscode": reset_password_passcode,
         }
 
-        return self._requester.post(endpoint, data=payload)
+        return await self._requester.post(endpoint, data=payload)
 
     # PUT
-    def put_users_bulk(self, users: list, updates: dict):
+    async def put_users_bulk(self, users: list, updates: dict):
         """
         Updates specified list of User's options, such as extension, name and etc.
 
@@ -286,9 +286,9 @@ class Users(BaseEndpoint):
 
         data = {"users": target_users, "data": updates}
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
-    def put_user(
+    async def put_user(
         self, service_provider_id: str, group_id: str, user_id: str, updates: dict
     ):
         """
@@ -311,9 +311,9 @@ class Users(BaseEndpoint):
         updates["groupId"] = group_id
         updates["userId"] = user_id
 
-        return self._requester.put(endpoint, data=updates)
+        return await self._requester.put(endpoint, data=updates)
 
-    def put_user_portal_passcode(self, user_id: str, new_passcode: str):
+    async def put_user_portal_passcode(self, user_id: str, new_passcode: str):
         """Updates the specified User's portal passcode.
 
         Args:
@@ -336,9 +336,9 @@ class Users(BaseEndpoint):
 
         data = {"userId": user_id, "newPasscode": new_passcode}
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
-    def put_user_sip_contacts(
+    async def put_user_sip_contacts(
         self, service_provider_id: str, group_id: str, user_id: str, sip_contacts: list
     ):
         """Adds a list of SIP Contacts to a specified user. If adding only 1 still include in a list.
@@ -369,9 +369,9 @@ class Users(BaseEndpoint):
             "contacts": [{"sipContact": contact} for contact in sip_contacts],
         }
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
-    def put_user_id(self, current_user_id: str, new_user_id: str):
+    async def put_user_id(self, current_user_id: str, new_user_id: str):
         """Updates a single user ID to a new user ID.
 
         Args:
@@ -386,9 +386,11 @@ class Users(BaseEndpoint):
 
         data = {"userId": current_user_id, "newUserId": new_user_id}
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
-    def put_group_id_update(self, user_id: str, group_id: str, evaluate: bool = False):
+    async def put_group_id_update(
+        self, user_id: str, group_id: str, evaluate: bool = False
+    ):
         """Updates the Group the user belongs to.
 
         Note: Not fully understood - use with caution
@@ -396,7 +398,7 @@ class Users(BaseEndpoint):
         Args:
             user_id (str): Target user ID
             group_id (str): Target grouo ID to migrate to
-            evaluate (bool, optional): True or False. Defaults to False.
+            evaluate (bool, optional): True or False. async Defaults to False.
 
         Returns:
             None
@@ -410,11 +412,11 @@ class Users(BaseEndpoint):
             "evaluateOnly": evaluate,
         }
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
     # DELETE
 
-    def delete_user(self, user_id: str):
+    async def delete_user(self, user_id: str):
         """Removes a single user form the platform
 
         Args:
@@ -428,4 +430,4 @@ class Users(BaseEndpoint):
 
         params = {"userId": user_id}
 
-        return self._requester.delete(endpoint, params=params)
+        return await self._requester.delete(endpoint, params=params)

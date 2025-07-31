@@ -7,7 +7,7 @@ class CallCenters(BaseEndpoint):
 
     # GET
 
-    def get_group_call_centers(self, service_provider_id: str, group_id: str):
+    async def get_group_call_centers(self, service_provider_id: str, group_id: str):
         """Retrieves a list of active call centers within a specified group, along with their settings.
 
         Args:
@@ -20,9 +20,9 @@ class CallCenters(BaseEndpoint):
 
         endpoint = "/groups/call-centers"
         params = {"serviceProviderId": service_provider_id, "groupId": group_id}
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_group_call_center(self, service_user_id: str):
+    async def get_group_call_center(self, service_user_id: str):
         """Retrieves deatiled information on a single Call Center.
 
         Args:
@@ -36,9 +36,9 @@ class CallCenters(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_user_call_center(self, user_id: str):
+    async def get_user_call_center(self, user_id: str):
         """Retrieves a list of call centers that the specified user is currently associated with.
 
         Args:
@@ -52,9 +52,9 @@ class CallCenters(BaseEndpoint):
 
         params = {"userId": user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_group_call_center_agents(self, service_user_id: str):
+    async def get_group_call_center_agents(self, service_user_id: str):
         """Returns list of agents assigned to the target call center.
 
         Args:
@@ -68,9 +68,9 @@ class CallCenters(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_group_call_center_bounced_calls(self, service_user_id: str):
+    async def get_group_call_center_bounced_calls(self, service_user_id: str):
         """Retrieves the number of rings before a call is bounced from the specified call center.
 
         Args:
@@ -84,9 +84,9 @@ class CallCenters(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_group_call_center_forced_forwarding(self, service_user_id: str):
+    async def get_group_call_center_forced_forwarding(self, service_user_id: str):
         """Retrieves the forwarding number for a call center if it is set to forward calls, along with any associated audio messages.
 
         Args:
@@ -100,9 +100,9 @@ class CallCenters(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_group_call_center_overflow(self, service_user_id):
+    async def get_group_call_center_overflow(self, service_user_id):
         """Retrieves the forwarding number for a user when all call center agents are busy, along with any associated audio messages.
 
         Args:
@@ -116,9 +116,9 @@ class CallCenters(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_group_call_center_stranded_calls(self, service_user_id):
+    async def get_group_call_center_stranded_calls(self, service_user_id):
         """Retrieves the forwarding number for a user when a call center doesn't answer, along with any associated audio messages.
 
         Args:
@@ -132,9 +132,9 @@ class CallCenters(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
-    def get_group_call_center_stranded_calls_unavailable(self, service_user_id):
+    async def get_group_call_center_stranded_calls_unavailable(self, service_user_id):
         """Retrieves the forwarding number for a user when a call center doesn't answer, along with the count of agents with an unavailable code in the call center.
 
         Args:
@@ -148,12 +148,12 @@ class CallCenters(BaseEndpoint):
 
         params = {"serviceUserId": service_user_id}
 
-        return self._requester.get(endpoint, params=params)
+        return await self._requester.get(endpoint, params=params)
 
     # POST
 
     # PUT
-    def put_group_call_centers_status(
+    async def put_group_call_centers_status(
         self, call_center_user_ids: list, status: bool = True
     ):
         """Updates a list of call centers (CC) status to either active or inactive.
@@ -175,9 +175,9 @@ class CallCenters(BaseEndpoint):
             ]
         }
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
-    def put_group_call_center(self, call_center_user_id: str, updates: dict):
+    async def put_group_call_center(self, call_center_user_id: str, updates: dict):
         """Allows you to update a specific call center.
 
         Args:
@@ -192,9 +192,9 @@ class CallCenters(BaseEndpoint):
 
         updates["serviceUserId"] = call_center_user_id
 
-        return self._requester.put(endpoint, data=updates)
+        return await self._requester.put(endpoint, data=updates)
 
-    def put_group_call_center_agents(
+    async def put_group_call_center_agents(
         self, call_center_user_id: str, agent_user_ids: list
     ):
         """Add or remove agents to a call center.
@@ -217,9 +217,9 @@ class CallCenters(BaseEndpoint):
             "agents": [{"userId": agent_id} for agent_id in agent_user_ids],
         }
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
-    def put_group_call_center_agents_levels(
+    async def put_group_call_center_agents_levels(
         self, call_center_user_id: str, agent_user_ids: list, skill_level: int
     ):
         """Update a list of agents skill level in a single Call Center (CC).
@@ -243,9 +243,9 @@ class CallCenters(BaseEndpoint):
             ],
         }
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
-    def put_group_call_center_bounced_calls(
+    async def put_group_call_center_bounced_calls(
         self, call_center_user_id: str, updates: dict
     ):
         """Update the bounced call settings of a single Call Center (CC)
@@ -262,9 +262,9 @@ class CallCenters(BaseEndpoint):
 
         updates["serviceUserId"] = call_center_user_id
 
-        return self._requester.put(endpoint, data=updates)
+        return await self._requester.put(endpoint, data=updates)
 
-    def put_group_call_center_dnis_instance(
+    async def put_group_call_center_dnis_instance(
         self, call_center_user_id: str, updates: dict
     ):
         """Update a DNIS instance of a single Call Center (CC).
@@ -281,9 +281,9 @@ class CallCenters(BaseEndpoint):
 
         updates["serviceUserID"] = call_center_user_id
 
-        return self._requester.put(endpoint, data=updates)
+        return await self._requester.put(endpoint, data=updates)
 
-    def put_group_call_center_forced_forwarding(
+    async def put_group_call_center_forced_forwarding(
         self, call_center_user_id: str, updates: dict
     ):
         """Update the forced forwarding settings of a single Call Center (CC).
@@ -300,9 +300,11 @@ class CallCenters(BaseEndpoint):
 
         updates["serviceUserID"] = call_center_user_id
 
-        return self._requester.put(endpoint, data=updates)
+        return await self._requester.put(endpoint, data=updates)
 
-    def put_group_call_center_overflow(self, call_center_user_id: str, updates: dict):
+    async def put_group_call_center_overflow(
+        self, call_center_user_id: str, updates: dict
+    ):
         """Update the overflow settings of a single Call Center (CC).
 
         Args:
@@ -317,9 +319,9 @@ class CallCenters(BaseEndpoint):
 
         updates["serviceUserID"] = call_center_user_id
 
-        return self._requester.put(endpoint, data=updates)
+        return await self._requester.put(endpoint, data=updates)
 
-    def put_group_call_center_stranded_calls(
+    async def put_group_call_center_stranded_calls(
         self, call_center_user_id: str, updates: dict
     ):
         """Update the stranded calls settings of a single Call Center (CC).
@@ -336,9 +338,9 @@ class CallCenters(BaseEndpoint):
 
         updates["serviceUserID"] = call_center_user_id
 
-        return self._requester.put(endpoint, data=updates)
+        return await self._requester.put(endpoint, data=updates)
 
-    def put_group_call_center_stranded_calls_unavailable(
+    async def put_group_call_center_stranded_calls_unavailable(
         self, call_center_user_id: str, updates: dict
     ):
         """Update the stranded calls unavailable settings of a single Call Center (CC).
@@ -355,9 +357,9 @@ class CallCenters(BaseEndpoint):
 
         updates["serviceUserID"] = call_center_user_id
 
-        return self._requester.put(endpoint, data=updates)
+        return await self._requester.put(endpoint, data=updates)
 
-    def put_user_call_center_supervised_agents(
+    async def put_user_call_center_supervised_agents(
         self, call_center_user_id: str, supervisor_user_id: str, agent_ids: list
     ):
         """Update the list of agents a supervisor has in a single Call Center (CC).
@@ -379,9 +381,9 @@ class CallCenters(BaseEndpoint):
             "supervisors": [{"userId": agent_id} for agent_id in agent_ids],
         }
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
-    def put_user_call_center(self, user_id: str, updates: dict):
+    async def put_user_call_center(self, user_id: str, updates: dict):
         """Update an agent's status in a Call Center (CC).
 
         Args:
@@ -396,9 +398,9 @@ class CallCenters(BaseEndpoint):
 
         updates["userId"] = user_id
 
-        return self._requester.put(endpoint, data=updates)
+        return await self._requester.put(endpoint, data=updates)
 
-    def put_user_call_center_agents_update(
+    async def put_user_call_center_agents_update(
         self, user_id: str, call_center_service_ids: list
     ):
         """Update the Call Centers (CC) a user is assigned to.
@@ -420,9 +422,9 @@ class CallCenters(BaseEndpoint):
             ],
         }
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
-    def put_user_call_center_agent_sign_out(self, user_id: str):
+    async def put_user_call_center_agent_sign_out(self, user_id: str):
         """Sign the user out of their assigned Call Centers (CC).
 
         Args:
@@ -438,7 +440,7 @@ class CallCenters(BaseEndpoint):
             "agentUserId": user_id,
         }
 
-        return self._requester.put(endpoint, data=data)
+        return await self._requester.put(endpoint, data=data)
 
 
 # DELETE
